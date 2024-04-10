@@ -10,6 +10,7 @@ extended:
 .ascii ": over ( n1 n2 -- n1 n2 n1 ) sp@ 4 + @ ;\n"
 .ascii ": swap ( n1 n2 -- n2 n1 ) over rot drop ;\n"
 .ascii ": allot ( n -- ) here @ + here ! ;\n"
+.ascii ": = ( n1 n2 -- b ) - 0= ;\n"
 
 .word 0
 

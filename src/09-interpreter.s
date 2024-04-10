@@ -9,13 +9,8 @@ ALIGN_TO_CELL
 
 # here's where the program starts (the interpreter)
 interpreter_start:
-    la t2, DOT
-    PRINTREG t2
-    PRINTSTR " | "
-    li t2, HERE
-    lw t2, (t2)
-    PRINTREG t2
-    PRINTSTR "\n"
+    
+    MYDEBUG4 s11, " is cond top\n"
     
     li t2, TIB                                  
     li t3, TOIN                                 
@@ -28,9 +23,12 @@ interpreter:
     li t4, CHAR_NEWLINE                         
     beq a0, t4, skip_send                       
 
+    
     beqz a0, interpreter                        
     li t4, CHAR_CARRIAGE                        
     beq a0, t4, interpreter                     
+
+    
 
 skip_send:
     
@@ -136,32 +134,60 @@ lookup_word:
     
 process_block:
 
-    MYDEBUG2 a1, " is address of CODEWORD\n"
-    addi t1, a1, 8
-    SAVETO t1, SAVE_LINK_A1
     
-    lw t0, -4(a1)
+    
+    
+    
+    LOADINTO t2, SAVE_LINK_A1
+    MYDEBUG3 t2, " just test N0\n"
+    
+    lw t5, -4(a1)
     li t4, 0x00ffffff
-    and t0, t0, t4
+    and t5, t5, t4
     
     
+    
+    mv t4, a1
+    MYDEBUG4 t4, " is addr we have\n"
+    
+    LOADINTO t3, IF_ADDRESS
+    beq t4, t3, skip_if_iet
+    LOADINTO t3, ELSE_ADDRESS
+    beq t4, t3, skip_if_iet
+    LOADINTO t3, THEN_ADDRESS
+    beq t4, t3, skip_if_iet
+    
+    li t4, 2
+    lw t3, 4(s11)
+    bne t3, t4, skip_if_iet
+    lw t3, (s11)
+    bnez t3, skip_if_iet
+    
+    ret
+skip_if_iet:
+
     li t1, 0x0002b5e0
     mv t3, a1
     lw t2, 4(a1)
     
     lw a1, 0(a1)
     
-    beq t0, t1, def_semi_skip 
     
+    
+    
+    beq t5, t1, def_semi_skip 
     
     bnez s8, in_definition
-    
     
     bnez t2, defined_word
     
 def_semi_skip:
     PUSHR
+    LOADINTO t2, SAVE_LINK_A1
+    MYDEBUG3 t2, " just test N1\n"
     jalr a1
+    LOADINTO t2, SAVE_LINK_A1
+    MYDEBUG3 t2, " just test N2\n"
     POPR
     ret
     
@@ -181,6 +207,7 @@ in_definition:
 defined_word: 
     PUSHR
 defined_loop:
+    
     lw t0, 0(a1)
     beqz t0, defined_exit
     addi t0, t0, -1
@@ -189,16 +216,21 @@ defined_loop:
     
     PUSHR
     PUSHRFROM a1
-    mv a1, t1
+    
+    addi t2, a1, 8
+    SAVETO t2, SAVE_LINK_A1
+    
+    mv a1, t1 
     
     
     call process_block
     POPRTO a1
     POPR
-    MYDEBUG a1, " address of cdword should be the same\n"
     addi a1, a1, 8
+    LOADINTO t1, SAVE_LINK_A1
+    beqz t1, defined_loop
     
-    
+    mv a1, t1
     j defined_loop
     
 word_is_number:
@@ -226,6 +258,8 @@ execute_done:
 .loop: .word .dloop         
 .dloop: .word process_token 
 .text
+
+#compile
 
 push_number:
     

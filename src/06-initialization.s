@@ -23,6 +23,22 @@ boot:
     sw t0, 0(t1)        
     
     la s6, extended     
+    
+    la t1, IF
+    addi t1, t1, 8
+    SAVETO t1, IF_ADDRESS
+    
+    la t1, ELSE
+    addi t1, t1, 8
+    SAVETO t1, ELSE_ADDRESS
+    
+    la t1, THEN
+    addi t1, t1, 8
+    MYDEBUG4 t1, " is address of code THEN\n"
+    SAVETO t1, THEN_ADDRESS
+    
+    PUSHCOND zero
+    PUSHCOND zero
 
 # reset the Forth stack pointers, registers, variables, and state
 reset:
@@ -32,6 +48,7 @@ reset:
     la s1, interpreter_start    
     li s2, RSP_TOP              
     li s10, REAL_SP
+    li s11, CSP_TOP
 
     
     mv a0, zero         

@@ -288,3 +288,61 @@
     POPRTO a7
     POPRTO a0
 .end_macro
+
+
+.macro MYDEBUG3 %reg %str
+
+    PUSHRFROM a0
+    PUSHRFROM a7
+    mv a0, %reg
+    li a7, 1
+    myecall
+    POPRTO a7
+    POPRTO a0
+    
+    .data
+    mystr: .asciz %str
+    .text
+    
+    PUSHRFROM a0
+    PUSHRFROM a7
+    la a0, mystr
+    li a7, 4
+    myecall
+    POPRTO a7
+    POPRTO a0
+.end_macro
+
+.macro MYDEBUG4 %reg %str
+
+    PUSHRFROM a0
+    PUSHRFROM a7
+    mv a0, %reg
+    li a7, 1
+    myecall
+    POPRTO a7
+    POPRTO a0
+    
+    .data
+    mystr: .asciz %str
+    .text
+    
+    PUSHRFROM a0
+    PUSHRFROM a7
+    la a0, mystr
+    li a7, 4
+    myecall
+    POPRTO a7
+    POPRTO a0
+.end_macro
+
+
+.macro PUSHCOND %reg
+  sw %reg, -4(s11)  
+  addi s11, s11, -CELL  
+.end_macro
+
+.macro POPCOND %reg
+  lw %reg, 0(s11)  
+  addi s11, s11, CELL  
+.end_macro

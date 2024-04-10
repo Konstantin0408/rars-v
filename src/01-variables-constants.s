@@ -15,6 +15,7 @@
 ##
 
 # DSP, RSP, TIB stacks grow downward from the top of memory
+.eqv CSP_TOP, 0x10208100                
 .eqv DSP_TOP, 0x10208000                
 .eqv RSP_TOP, 0x10207f00                
 .eqv TIB_TOP, 0x10207e00                
@@ -37,6 +38,11 @@
 .eqv SAVE_A1,     0x10200008
 
 .eqv SAVE_LINK_A1 0x1020000c
+.eqv SKIP_BRANCH  0x10200010
+
+.eqv IF_ADDRESS   0x10200014
+.eqv ELSE_ADDRESS 0x10200018
+.eqv THEN_ADDRESS 0x1020001c
 
 ##
 # Characters
