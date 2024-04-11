@@ -19,11 +19,11 @@ interpreter_start:
 
 interpreter:
     
-    call uart_get                               
-    li t4, CHAR_NEWLINE                         
+    call uart_get    
+                               
+    li t4, CHAR_NEWLINE            
     beq a0, t4, skip_send                       
 
-    
     beqz a0, interpreter                        
     li t4, CHAR_CARRIAGE                        
     beq a0, t4, interpreter                     
@@ -65,7 +65,9 @@ replace_newline:
 
 process_token:
     
-    li t2, TIB              
+    
+    li t2, TIB    
+    lw t3, (t2)
     li t3, TOIN             
     lw a0, 0(t3)            
     add a0, a0, t2          
@@ -139,7 +141,6 @@ process_block:
     
     
     LOADINTO t2, SAVE_LINK_A1
-    MYDEBUG3 t2, " just test N0\n"
     
     lw t5, -4(a1)
     li t4, 0x00ffffff
@@ -148,7 +149,6 @@ process_block:
     
     
     mv t4, a1
-    MYDEBUG4 t4, " is addr we have\n"
     
     LOADINTO t3, IF_ADDRESS
     beq t4, t3, skip_if_iet
@@ -184,10 +184,8 @@ skip_if_iet:
 def_semi_skip:
     PUSHR
     LOADINTO t2, SAVE_LINK_A1
-    MYDEBUG3 t2, " just test N1\n"
     jalr a1
     LOADINTO t2, SAVE_LINK_A1
-    MYDEBUG3 t2, " just test N2\n"
     POPR
     ret
     

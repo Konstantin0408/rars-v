@@ -62,7 +62,6 @@ defcode "rot", 0x0388a69a, ROT, DROP
 
 # 0= ( x -- f )         -1 if top of stack is 0, 0 otherwise
 defcode "0=", 0x025970b2, ZEQU, ROT
-    MYDEBUG3 zero, " AT EQZ!!\n"
     checkunderflow 0    
     lw t0, 0(sp)        
     snez t0, t0         
@@ -72,13 +71,11 @@ defcode "0=", 0x025970b2, ZEQU, ROT
 
 # + ( x1 x2 -- n )      Add the two values at the top of the stack
 defcode "+", 0x0102b5d0, SUM, ZEQU
-    MYDEBUG3 s10, " is s10 before adding\n"
     checkunderflow CELL 
     POP t0              
     lw t1, 0(sp)        
     add t0, t0, t1      
     sw t0, 0(sp)        
-    MYDEBUG3 s10, " is s10 after adding\n"
     NEXT
 
 # * ( x1 x2 -- m )      Multiply the two values at the top of the stack
@@ -147,7 +144,6 @@ defcode "emit", 0x04964f74, EMIT, KEY
 
 # . ( x -- )            Write integer to uart output
 defcode ".", 0x0402b5d3, DOT, EMIT
-    MYDEBUG3 s10, " is s10 before dotting\n"
     checkunderflow 0    
     mv s5, ra
     li a0, CHAR_SPACE   
@@ -155,7 +151,6 @@ defcode ".", 0x0402b5d3, DOT, EMIT
     POP a0              
     PRINTA0
     mv ra, s5
-    MYDEBUG3 s10, " is s10 after dotting\n"
     NEXT
 
 ##
@@ -195,7 +190,6 @@ defcode "latest", 0x06e8ca72, FLATEST, FHERE
 # begin                  Begin until loop, puts 
 defcode "begin", 0x062587ea, BEGIN, FLATEST
     LOADINTO t2, SAVE_LINK_A1 
-    MYDEBUG3 t2 " BEGIN reached\n"
     li t1, 1
     PUSHCOND t1
     PUSHCOND t2
@@ -203,7 +197,6 @@ defcode "begin", 0x062587ea, BEGIN, FLATEST
 
 # until                 Begin until loop, puts 
 defcode "until", 0x06828031, UNTIL, BEGIN
-    MYDEBUG3 zero " until reached\n"
     POP t2
     
     bnez t2, until_reached
@@ -225,7 +218,6 @@ defcode "if", 0x06597834, IF, UNTIL
 
 # else                   If - else - then
 defcode "else", 0x06964c6e, ELSE, IF
-    MYDEBUG4 s11, " ed\n"
     lw t2, 0(s11)
     seqz t2, t2
     sw t2, 0(s11)
@@ -233,7 +225,6 @@ defcode "else", 0x06964c6e, ELSE, IF
     
 # then                   If - else - then
 defcode "then", 0x069e7354, THEN, ELSE
-    MYDEBUG4 s11, " td\n"
     POPCOND zero
     POPCOND zero
     NEXT
@@ -278,11 +269,7 @@ defcode ":", 0x0102b5df, COLON, THEN
 
     
     
-    li t5, PAD          
-    PRINTREG t2
-    PRINTSTR " is new HERE\n"
-    PRINTREG t5
-    PRINTSTR " is PAD\n"
+    li t5, PAD      
     bge t2, t5, err_mem 
 
     

@@ -7,11 +7,16 @@
 # board boot initializations
 boot:
     li gp, 0x10301000
-    PRINTSTR "INIT.\n"
+    
+    SAVETO a0, ARG_COUNT
+    SAVETO a1, ARGS
+    li t0, -1
+    SAVE_TZERO, CURRENT_ARG
+    
+    
     call interrupt_init 
     call uart_init      
     call gpio_init      
-
     
     li t0, RAM_BASE     
     li t1, HERE         
@@ -34,7 +39,6 @@ boot:
     
     la t1, THEN
     addi t1, t1, 8
-    MYDEBUG4 t1, " is address of code THEN\n"
     SAVETO t1, THEN_ADDRESS
     
     PUSHCOND zero
@@ -47,19 +51,19 @@ reset:
     li sp, DSP_TOP
     la s1, interpreter_start    
     li s2, RSP_TOP              
-    li s10, REAL_SP
+    #li s10, REAL_SP
     li s11, CSP_TOP
-
     
     mv a0, zero         
     mv a1, zero         
     mv a2, zero         
-    mv a3, zero         
-
+    mv a3, zero    
     
     li t0, STATE        
     sw zero, 0(t0)      
     mv s8, zero
+    
+    j tib_init
 
 ALIGN_TO_CELL
 # reset the RAM from the last defined word

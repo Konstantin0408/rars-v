@@ -19,30 +19,38 @@
 .eqv DSP_TOP, 0x10208000                
 .eqv RSP_TOP, 0x10207f00                
 .eqv TIB_TOP, 0x10207e00                
-.eqv TIB,     0x10207d00                
-
-# variables
-.eqv STATE,   0x10207cfc                
-.eqv TOIN,    0x10207cf8                
-.eqv HERE,    0x10207cf4                
-.eqv LATEST,  0x10207cf0                
-.eqv NOOP,    0x10207cec                
-.eqv PAD,     0x10307bec                
+.eqv TIB,     0x10207d00     
 
 .eqv REAL_SP  0x7fffeffc
+           
 
-# dictionary grows upward from the RAM base address
-.eqv FORTH_SIZE, 0x00006bec             
+# variables
+.eqv STATE,       0x10207cfc                
+.eqv TOIN,        0x10207cf8                
+.eqv HERE,        0x10207cf4                
+.eqv LATEST,      0x10207cf0                
+.eqv NOOP,        0x10207cec                
+.eqv PAD,         0x10307bec                
 
 .eqv SAVE_A0,     0x10200004
 .eqv SAVE_A1,     0x10200008
-
 .eqv SAVE_LINK_A1 0x1020000c
-.eqv SKIP_BRANCH  0x10200010
 
-.eqv IF_ADDRESS   0x10200014
+.eqv SKIP_BRANCH, 0x10200010
+
+.eqv IF_ADDRESS,  0x10200014
 .eqv ELSE_ADDRESS 0x10200018
 .eqv THEN_ADDRESS 0x1020001c
+
+.eqv ARG_COUNT,   0x10201000
+.eqv ARGS,        0x10201004
+.eqv CURRENT_ARG, 0x10201008
+.eqv CURR_FILEDSC 0x1020100c
+
+
+# dictionary grows upward from the RAM base address
+.eqv FORTH_SIZE,  0x00006bec             
+
 
 ##
 # Characters

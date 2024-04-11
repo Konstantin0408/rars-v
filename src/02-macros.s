@@ -109,13 +109,14 @@
 # restore HERE and LATEST variables
 .macro restorevars %reg
     
-    li t0, HERE         
-    sw %reg, 0(t0)      
+    #li t0, HERE         
+    #sw %reg, 0(t0)      
 
     
-    li t0, LATEST       
-    lw t1, 0(%reg)      
-    sw t1, 0(t0)        
+    #li t0, LATEST       
+    #lw t1, 0(%reg)      
+    #sw t1, 0(t0)        
+    
 .end_macro
 
 # check for stack underflow
@@ -141,6 +142,35 @@
     
 .end_macro
 
+.macro TypeOnce %reg
+    PUSHREG a0
+    PUSHREG a1
+    PUSHREG %reg
+    mv a0, %reg
+    li a7, 1
+    ecall
+    li a0, 0xa
+    li a7, 11
+    ecall
+    POP %reg
+    POP a1
+    POP a0
+.end_macro
+
+.macro CharOnce %reg
+    PUSHREG a0
+    PUSHREG a1
+    PUSHREG %reg
+    mv a0, %reg
+    li a7, 11
+    ecall
+    li a0, 0xa
+    li a7, 11
+    ecall
+    POP %reg
+    POP a1
+    POP a0
+.end_macro
 
 .macro PRINTSTR %str
     .data
@@ -231,6 +261,13 @@
   li t0, %addr
   sw %reg, 0(t0)
   POPRTO t0
+.end_macro
+
+.macro SAVE_TZERO %addr
+  PUSHRFROM t1
+  li t1, %addr
+  sw t0, 0(t1)
+  POPRTO t1
 .end_macro
 
 .macro safecall %label

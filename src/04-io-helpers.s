@@ -5,6 +5,8 @@
 .data
 
 extended:
+#.word 0 # todo remove null!!!
+.word 0
 .ascii ": - ( n1 n2 -- n ) -1 * + ;\n"
 .ascii ": dup ( n1 -- n1 n1 ) sp@ @ ;\n"
 .ascii ": over ( n1 n2 -- n1 n2 n1 ) sp@ 4 + @ ;\n"
@@ -16,18 +18,69 @@ extended:
 .ascii ": and ( n1 n2 -- n ) nand invert ;\n"
 .ascii ": or ( n1 n2 -- m ) invert swap invert nand ;\n"
 .ascii ": nor ( n1 n2 -- m ) or invert ;\n"
-
+.ascii ": xor over over or rot rot nand and ;\n"
+.ascii ": negative 0x80000000 and 0x80000000 = ;\n"
+.ascii ": < over over xor negative if drop else - then negative ;\n"
 
 .word 0
+
+file_buffer: .space 16000
+.word 0
+
+
 
 .text
 .globl uart_print, uart_get, uart_put
 uart_get:
     beqz s6, read_from_console
     lb a0, 0(s6)
+    li t0, 13
     addi s6, s6, 1
-    beqz a0, switch_to_console
+    beq a0, t0, uart_get
+    beqz a0, switch_to_console_or_file
     ret
+switch_to_console_or_file:
+    LOADINTO t0, ARG_COUNT
+    LOADINTO t1, CURRENT_ARG
+    addi t1, t1, 1
+    SAVETO t1, CURRENT_ARG
+    
+    beqz t0, switch_to_console
+    
+    
+    LOADINTO t3, CURR_FILEDSC
+    # todo close file
+    
+    bne t0, t1, read_from_file
+    li a7, 10
+    ecall
+
+read_from_file:
+    LOADINTO t1, CURRENT_ARG
+    slli t1, t1, 2                # t1 is arg number and is multiplied by 4
+    LOADINTO t2, ARGS
+    add t1, t2, t1
+    
+    lw a0, (t1)
+    
+    li a1, 0
+    li a7, 1024
+    ecall
+    # now a0 has file descriptor
+    la a1, file_buffer
+    li a2, 4000
+    li a7, 63
+    
+    la s6, file_buffer
+    
+    
+    ecall
+    
+    la a0, file_buffer
+    li a1, TIB
+    
+    j uart_get
+
 switch_to_console:
     mv s6, zero
 read_from_console:
@@ -44,8 +97,11 @@ skip_readline:
 skip_line_reset:
     ret
 
+
 uart_put:
-    bnez s6, print_skip
+    LOADINTO t2, CURRENT_ARG
+    li t1, -1
+    beq t2, t1, print_skip
     PUSH a7
     li a7, 11
     ecall
