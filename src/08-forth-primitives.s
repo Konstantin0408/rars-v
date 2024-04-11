@@ -159,31 +159,31 @@ defcode ".", 0x0402b5d3, DOT, EMIT
 
 # tib ( -- addr )       Store TIB variable address in top of data stack
 defcode "tib", 0x0388ae44, FTIB, DOT
-    li t1, TIB          
+    LOADINTO t1, TIB          
     PUSH t1
     NEXT
 
 # state ( -- addr )     Store STATE variable address in top of data stack
 defcode "state", 0x05614a06, FSTATE, FTIB
-    li t1, STATE        
+    LOADINTO t1, STATE        
     PUSH t1
     NEXT
 
 # >in ( -- addr )       Store TOIN variable address in top of data stack
 defcode ">in", 0x0387c89a, FTOIN, FSTATE
-    li t1, TOIN         
+    LOADINTO t1, TOIN         
     PUSH t1
     NEXT
 
 # here ( -- addr )      Store HERE variable address in top of data stack
 defcode "here", 0x0497d3a9, FHERE, FTOIN
-    li t1, HERE         
+    LOADINTO t1, HERE         
     PUSH t1
     NEXT
 
 # latest ( -- addr )     Store LATEST variable address in top of data stack
 defcode "latest", 0x06e8ca72, FLATEST, FHERE
-    li t1, LATEST       
+    LOADINTO t1, LATEST       
     PUSH t1
     NEXT
 
@@ -256,18 +256,13 @@ defcode ":", 0x0102b5df, COLON, THEN
 
     safecall djb2_hash      
 
-    
-
-    
     li t0, HERE
     li t1, LATEST
     la a2, .addr        
 
-    
     lw t2, 0(t0)        
     lw t3, 0(t1)        
 
-    
     
     li t5, PAD      
     bge t2, t5, err_mem 
@@ -290,9 +285,6 @@ defcode ":", 0x0102b5df, COLON, THEN
     addi t4, t4, 16     
     SAVETO t4, HERE
     
-    
-    
-
     
     li t0, STATE        
     li t1, 1            

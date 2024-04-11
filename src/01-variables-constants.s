@@ -30,7 +30,7 @@
 .eqv HERE,        0x10207cf4                
 .eqv LATEST,      0x10207cf0                
 .eqv NOOP,        0x10207cec                
-.eqv PAD,         0x10307bec                
+.eqv PAD,         0x103c1000                
 
 .eqv SAVE_A0,     0x10200004
 .eqv SAVE_A1,     0x10200008

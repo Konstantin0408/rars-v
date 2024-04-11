@@ -6,7 +6,6 @@
 
 extended:
 #.word 0 # todo remove null!!!
-.word 0
 .ascii ": - ( n1 n2 -- n ) -1 * + ;\n"
 .ascii ": dup ( n1 -- n1 n1 ) sp@ @ ;\n"
 .ascii ": over ( n1 n2 -- n1 n2 n1 ) sp@ 4 + @ ;\n"
@@ -16,11 +15,14 @@ extended:
 .ascii ": mod ( n1 n2 -- m ) over over ;\n"
 .ascii ": invert ( n1 -- ~n1 ) dup nand ;\n"
 .ascii ": and ( n1 n2 -- n ) nand invert ;\n"
-.ascii ": or ( n1 n2 -- m ) invert swap invert nand ;\n"
-.ascii ": nor ( n1 n2 -- m ) or invert ;\n"
-.ascii ": xor over over or rot rot nand and ;\n"
-.ascii ": negative 0x80000000 and 0x80000000 = ;\n"
-.ascii ": < over over xor negative if drop else - then negative ;\n"
+.ascii ": or ( n1 n2 -- n ) invert swap invert nand ;\n"
+.ascii ": nor ( n1 n2 -- n ) ( n1 n2 -- n ) or invert ;\n"
+.ascii ": xor ( n1 n2 -- n )  over over or rot rot nand and ;\n"
+.ascii ": xnor ( n1 n2 -- n ) xor invert ;\n"
+.ascii ": negative ( n -- b ) 0x80000000 and 0x80000000 = ;\n"
+.ascii ": positive ( n -- b ) invert negative ; \n"
+.ascii ": < ( n1 n2 -- b ) over over xor negative if drop else - then negative ;\n"
+.ascii ": > ( n1 n2 -- b ) swap < ;\n"
 
 .word 0
 
