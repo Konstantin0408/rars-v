@@ -19,7 +19,13 @@ interpreter_start:
 
 interpreter:
     
-    call uart_get    
+    call uart_get
+    li t0, CHAR_UPPERCASE_A  
+    ble a0, t0, not_uppercase
+    li t0, CHAR_UPPERCASE_Z 
+    bge a0, t0, not_uppercase
+    # addi a0, a0, CASE_DIFFERENCE
+not_uppercase:
                                
     li t4, CHAR_NEWLINE            
     beq a0, t4, skip_send                       
@@ -60,8 +66,8 @@ skip_oparens:
 
 ALIGN_TO_CELL
 replace_newline:
-    li a0, CHAR_SPACE       
-    sb a0, -1(a1)           
+    #li a0, CHAR_SPACE       
+    #sb a0, -1(a1)           
 
 process_token:
     

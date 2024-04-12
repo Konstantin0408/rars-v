@@ -63,4 +63,7 @@
 .eqv CHAR_COMMENT, 0x5c          
 .eqv CHAR_COMMENT_OPARENS, 0x28  
 .eqv CHAR_COMMENT_CPARENS, 0x29  
-.eqv CHAR_MINUS, 0x2d            
+.eqv CHAR_MINUS, 0x2d 
+.eqv CHAR_UPPERCASE_A, 0x41
+.eqv CHAR_UPPERCASE_Z, 0x5a
+.eqv CASE_DIFFERENCE, 0x20

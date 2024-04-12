@@ -102,7 +102,7 @@
   %err_name :
     la a1, %msg_name    
     addi a2, a1, %size  
-    call uart_print     
+    call uart_print   
     j %jump             
 .end_macro
 

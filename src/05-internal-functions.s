@@ -52,6 +52,20 @@ token_done:
 # arguments: a0 = token buffer start address, a1 = token size (length in bytes)
 # returns: a0 = integer value, a1 = 0 = OK, 1 or greater = ERROR
 number:
+    li t3, 0x27                 # apostrophe
+    lbu t2, 0(a0)               
+    bne t2, t3, number_numerical 
+    lbu t2, 2(a0)               
+    bne t2, t3, number_numerical 
+    li t3, 3            
+    bne a1, t3, number_numerical 
+    
+    lb a0, 1(a0)
+    li a1, 0
+    ret
+    
+    
+number_numerical:
     li t1, 10                   
     mv t0, zero                 
     li t3, CHAR_MINUS           
@@ -65,13 +79,14 @@ number:
     addi a1, a1, -1             
     beqz a1, number_error       
 number_check:
-    li t3, 0x30                 
+    
+    li t3, 0x30                 # 0
     lbu t2, 0(a0)               
     bne t2, t3, number_digit    
-    li t3, 0x78                 
+    li t3, 0x78                 # x
     lbu t2, 1(a0)               
-    bne t2, t3, number_digit    
-
+    bne t2, t3, number_digit   
+    
     
     li t1, 16                   
     addi a0, a0, 2              
@@ -80,7 +95,7 @@ number_check:
 number_digit:
     beqz a1, number_done        
     mul t0, t0, t1              
-    lbu t2, 0(a0)               
+    lbu t2, 0(a0)        
     addi a0, a0, 1              
 
     
@@ -88,10 +103,10 @@ number_digit:
     bnez t3, number_done        
     addi t2, t2, -0x30          
     sltiu t3, t2, 10            
-    bnez t3, number_number      
-    sltiu t3, t2, 0x11          
+    bnez t3, number_number   
+    sltiu t3, t2, 0x31          # difference between numbers and lc letters
     bnez t3, number_done        
-    addi t2, t2, -7             
+    addi t2, t2, -39          
 number_number:
     slt t3, t2, t1              
     beqz t3, number_done        

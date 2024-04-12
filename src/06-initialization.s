@@ -50,8 +50,7 @@ reset:
     
     li sp, DSP_TOP
     la s1, interpreter_start    
-    li s2, RSP_TOP              
-    #li s10, REAL_SP
+    li s2, RSP_TOP
     li s11, CSP_TOP
     
     mv a0, zero         

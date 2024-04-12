@@ -5,7 +5,6 @@
 .data
 
 extended:
-#.word 0 # todo remove null!!!
 .ascii ": - ( n1 n2 -- n ) -1 * + ;\n"
 .ascii ": dup ( n1 -- n1 n1 ) sp@ @ ;\n"
 .ascii ": over ( n1 n2 -- n1 n2 n1 ) sp@ 4 + @ ;\n"
