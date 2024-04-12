@@ -113,8 +113,27 @@ defcode "nand", 0x049b0c66, NAND, FDIV
     sw t0, 0(sp)        
     NEXT
 
+# lshift ( x1 x2 -- n ) Leftward bitshift the two values at the top of the stack
+defcode "lshift", 0x0427fe4f, LSH, NAND
+    checkunderflow CELL 
+    POP t0              
+    lw t1, 0(sp)        
+    sll t0, t1, t0   
+    sw t0, 0(sp)        
+    NEXT
+
+
+# rshift ( x1 x2 -- n ) Rightward bitshift the two values at the top of the stack
+defcode "rshift", 0x0426f215, RSH, LSH
+    checkunderflow CELL 
+    POP t0              
+    lw t1, 0(sp)        
+    srl t0, t1, t0   
+    sw t0, 0(sp)        
+    NEXT
+
 # lit ( -- n )          Get the next word from IP and push it to the stack, increment IP
-defcode "lit", 0x03888c4e, LIT, NAND
+defcode "lit", 0x03888c4e, LIT, RSH
     lw t1, 0(s1)        
     PUSH t1             
     addi s1, s1, CELL   
@@ -284,8 +303,8 @@ defcode "then", 0x069e7354, THEN, ELSE
 # Forth words
 ##
 
-# : ( -- )              # Start the definition of a new word
-defcode ":", 0x0102b5df, COLON, THEN
+# variable ( -- )              # Create a new variable
+defcode "variable", 0x016b736b, VAR, THEN
     li t2, TIB          
     li t3, TOIN         
     lw a0, 0(t3)        
@@ -303,16 +322,16 @@ defcode ":", 0x0102b5df, COLON, THEN
     li t0, 32           
     bgtu a1, t0, err_token 
     
-    mv s7, ra
+    mv s7, ra                    # saving return
 
-    safecall djb2_hash      
+    safecall djb2_hash           # now a0 = hash
 
     li t0, HERE
     li t1, LATEST
     la a2, .addr        
 
-    lw t2, 0(t0)        
-    lw t3, 0(t1)        
+    lw t2, 0(t0)                 # t2 = here
+    lw t3, 0(t1)                 # t3 = latest
 
     
     li t5, PAD      
@@ -320,21 +339,83 @@ defcode ":", 0x0102b5df, COLON, THEN
 
     
     
-    mv t0, t3           
-    LOADINTO t3, HERE
-    sw t3, 0(t1)        
+    mv t0, t3                    # t0 = t3 = latest
+    LOADINTO t3, HERE            # t3 = here
+    sw t3, 0(t1)                 # LATEST set to here
 
     
-    sw t0,       (t3)   
-    sw a0,   CELL(t3)   
-    addi t2, t2, 16
-    sw t2,      8(t3)   
+    sw t0,       (t3)            # new latest's link = old latest
+    sw a0,   CELL(t3)            # new latest's hash = hash
+    addi t2, t2, 16              # here += 16
+    sw t2,      8(t3)            # new latest's code = new here
     li t0, 1
-    sw t0,     12(t3)
+    sw t0,     12(t3)            # it's a user defined word
+    
+    LOADINTO t4, HERE
+    addi t4, t4, 32   
+    
+    li t0, 1
+    sw t0, -16(t4)
+    addi t3, t4, -4
+    sw t3, -12(t4)
+     
+    SAVETO t4, HERE              # new here saved
+    
+    
+    
+    NEXT
+
+# : ( -- )              # Start the definition of a new word
+defcode ":", 0x0102b5df, COLON, VAR
+    li t2, TIB          
+    li t3, TOIN         
+    lw a0, 0(t3)        
+    add a0, a0, t2      
+    safecall token          
+
+    
+    li t2, TIB          
+    add t0, a0, a1      
+    sub t0, t0, t2      
+    sw t0, 0(t3)        
+
+    
+    beqz a1, err_ok     
+    li t0, 32           
+    bgtu a1, t0, err_token 
+    
+    mv s7, ra                    # saving return
+
+    safecall djb2_hash           # now a0 = hash
+
+    li t0, HERE
+    li t1, LATEST
+    la a2, .addr        
+
+    lw t2, 0(t0)                 # t2 = here
+    lw t3, 0(t1)                 # t3 = latest
+
+    
+    li t5, PAD      
+    bge t2, t5, err_mem 
+
+    
+    
+    mv t0, t3                    # t0 = t3 = latest
+    LOADINTO t3, HERE            # t3 = here
+    sw t3, 0(t1)                 # LATEST set to here
+
+    
+    sw t0,       (t3)            # new latest's link = old latest
+    sw a0,   CELL(t3)            # new latest's hash = hash
+    addi t2, t2, 16              # here += 16
+    sw t2,      8(t3)            # new latest's code = new here
+    li t0, 1
+    sw t0,     12(t3)            # it's a user defined word
     
     LOADINTO t4, HERE
     addi t4, t4, 16     
-    SAVETO t4, HERE
+    SAVETO t4, HERE              # new here saved
     
     
     li t0, STATE        
@@ -351,12 +432,11 @@ docol:
     NEXT
 
 .addr:
-    j docol             
+    j docol          
+       
 
 # ; ( -- )              # End the definition of a new word
 defcode ";", 0x8102b5e0, SEMI, COLON
-    
-    PRINTSTR "ku-ku\n"
     
     li t0, HERE         
     lw t2, 0(t0)        

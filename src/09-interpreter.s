@@ -248,7 +248,7 @@ word_is_number:
     j defined_loop
 skip_if_iet2:
     
-    PUSH t1
+    PUSH t1                     # the number to push
     addi a1, a1, 8
     j defined_loop
 defined_exit:

@@ -22,6 +22,7 @@ extended:
 .ascii ": positive ( n -- b ) invert negative ; \n"
 .ascii ": < ( n1 n2 -- b ) over over xor negative if drop else - then negative ;\n"
 .ascii ": > ( n1 n2 -- b ) swap < ;\n"
+.ascii ": cells 4 * ;\n"
 
 .word 0
 
