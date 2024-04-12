@@ -42,8 +42,13 @@ defcode "rp@", 0x0388a687, RSPFETCH, DSPFETCH
     PUSH s10            
     NEXT
 
+# cp@ ( -- addr )       Get current control stack pointer
+defcode "cp@", 0x038866b8, CSPFETCH, RSPFETCH
+    PUSH s11     
+    NEXT
+
 # drop ( n -- )         Drop top value
-defcode "drop", 0x0395d91a, DROP, RSPFETCH
+defcode "drop", 0x0395d91a, DROP, CSPFETCH
     checkunderflow 0
     POP zero
     NEXT
@@ -187,8 +192,54 @@ defcode "latest", 0x06e8ca72, FLATEST, FHERE
     PUSH t1
     NEXT
 
+# empty ( -- b )         Check if stack is empty
+defcode "empty", 0x06605c34, EMPTY, FLATEST
+    li t1, DSP_TOP
+    sub t1, t1, sp
+    seqz t1, t1
+    sub t1, zero, t1
+    PUSH t1
+    NEXT
+    
+# clearstack ( {n} -- )  Empties the whole stack
+defcode "clearstack", 0x065c0cc2, CLEAR, EMPTY
+    li sp, DSP_TOP
+    NEXT
+    
+# depth ( -- n )         Puts stack size on top
+defcode "depth", 0x0649e09a, DEPTH, CLEAR
+    li t1, DSP_TOP
+    sub t1, t1, sp
+    srli t1, t1, 2
+    PUSH t1
+    NEXT
+
+
+# .s ( -- )              Print out the whole stack
+defcode ".s", 0x065970a6, DOT_S, DEPTH
+    li t1, DSP_TOP
+    addi t1, t1, -CELL
+dot_s_loop:
+    blt t1, sp, dot_s_exit
+    li a0, CHAR_SPACE
+    li a7, 11
+    ecall
+    lw a0, 0(t1)
+    li a7, 1
+    ecall
+    addi t1, t1, -CELL
+    j dot_s_loop
+dot_s_exit:
+.data
+top_pointer: .asciz " <top"
+.text
+    la a0, top_pointer
+    li a7, 4
+    ecall
+    NEXT
+
 # begin                  Begin until loop, puts 
-defcode "begin", 0x062587ea, BEGIN, FLATEST
+defcode "begin", 0x062587ea, BEGIN, DOT_S
     LOADINTO t2, SAVE_LINK_A1 
     li t1, 1
     PUSHCOND t1

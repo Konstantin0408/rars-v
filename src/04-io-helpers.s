@@ -11,7 +11,7 @@ extended:
 .ascii ": swap ( n1 n2 -- n2 n1 ) over rot drop ;\n"
 .ascii ": allot ( n -- ) here @ + here ! ;\n"
 .ascii ": = ( n1 n2 -- b ) - 0= ;\n"
-.ascii ": mod ( n1 n2 -- m ) over over ;\n"
+.ascii ": mod ( n1 n2 -- m ) over over / * - ;\n"
 .ascii ": invert ( n1 -- ~n1 ) dup nand ;\n"
 .ascii ": and ( n1 n2 -- n ) nand invert ;\n"
 .ascii ": or ( n1 n2 -- n ) invert swap invert nand ;\n"

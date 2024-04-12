@@ -238,6 +238,16 @@ defined_loop:
     j defined_loop
     
 word_is_number:
+    li t4, 2
+    lw t3, 4(s11)
+    bne t3, t4, skip_if_iet2
+    lw t3, (s11)
+    bnez t3, skip_if_iet2
+    
+    addi a1, a1, 8
+    j defined_loop
+skip_if_iet2:
+    
     PUSH t1
     addi a1, a1, 8
     j defined_loop
