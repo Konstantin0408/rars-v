@@ -10,8 +10,6 @@ ALIGN_TO_CELL
 # here's where the program starts (the interpreter)
 interpreter_start:
     
-    MYDEBUG4 s11, " is cond top\n"
-    
     li t2, TIB                                  
     li t3, TOIN                                 
     lw a1, 0(t3)                                
@@ -84,7 +82,7 @@ process_token:
     add t0, a0, a1          
     sub t0, t0, t2          
     sw t0, 0(t3)            
-
+    
     
     beqz a1, err_ok         
     

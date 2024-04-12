@@ -69,7 +69,10 @@
 # define a primitive dictionary word
 .macro defcode %name, %hash, %label, %link
     .data
-    ALIGN_TO_CELL      
+  string_address:
+    .asciz %name
+    ALIGN_TO_CELL
+    .word 0 string_address
     .globl %label
   %label :
     .word %link        

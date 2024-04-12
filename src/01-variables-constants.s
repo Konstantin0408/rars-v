@@ -26,7 +26,7 @@
 
 # variables
 .eqv STATE,       0x10207cfc                
-.eqv TOIN,        0x10207cf8                
+.eqv TOIN,        0x10207cf8          # end of current token relative to TIB     
 .eqv HERE,        0x10207cf4                
 .eqv LATEST,      0x10207cf0                
 .eqv NOOP,        0x10207cec                

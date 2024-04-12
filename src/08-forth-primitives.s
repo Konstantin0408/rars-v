@@ -303,26 +303,44 @@ defcode "then", 0x069e7354, THEN, ELSE
 # Forth words
 ##
 
+# words                  Print out all words
+defcode "words", 0x06a73474, WORDS, THEN
+    LOADINTO t0, LATEST
+words_loop:
+    addi t1, t0, -4
+    lw a0, (t1)
+    li a7, 4
+    ecall
+    li a0, CHAR_SPACE
+    li a7, 11
+    ecall
+    lw t0, (t0)
+    bnez t0, words_loop
+words_exit:
+    NEXT
+
 # variable ( -- )              # Create a new variable
-defcode "variable", 0x016b736b, VAR, THEN
+defcode "variable", 0x016b736b, VAR, WORDS
     li t2, TIB          
     li t3, TOIN         
     lw a0, 0(t3)        
     add a0, a0, t2      
     safecall token          
-
+    
+    mv s7, ra                    # saving return
     
     li t2, TIB          
     add t0, a0, a1      
     sub t0, t0, t2      
     sw t0, 0(t3)        
-
     
     beqz a1, err_ok     
     li t0, 32           
     bgtu a1, t0, err_token 
     
-    mv s7, ra                    # saving return
+    #PUSH
+    call fill_word_string
+    #POP
 
     safecall djb2_hash           # now a0 = hash
 
@@ -337,7 +355,6 @@ defcode "variable", 0x016b736b, VAR, THEN
     li t5, PAD      
     bge t2, t5, err_mem 
 
-    
     
     mv t0, t3                    # t0 = t3 = latest
     LOADINTO t3, HERE            # t3 = here
@@ -361,8 +378,7 @@ defcode "variable", 0x016b736b, VAR, THEN
      
     SAVETO t4, HERE              # new here saved
     
-    
-    
+    mv ra, s7                    # moving back return
     NEXT
 
 # : ( -- )              # Start the definition of a new word
@@ -371,11 +387,13 @@ defcode ":", 0x0102b5df, COLON, VAR
     li t3, TOIN         
     lw a0, 0(t3)        
     add a0, a0, t2      
-    safecall token          
-
+    safecall token               # a0 = beginning of token, a1 = length
+    
+    mv s7, ra                    # saving return
+    
     
     li t2, TIB          
-    add t0, a0, a1      
+    add t0, a0, a1               # t0 = ending
     sub t0, t0, t2      
     sw t0, 0(t3)        
 
@@ -384,7 +402,10 @@ defcode ":", 0x0102b5df, COLON, VAR
     li t0, 32           
     bgtu a1, t0, err_token 
     
-    mv s7, ra                    # saving return
+    #PUSH
+    call fill_word_string
+    #POP
+    
 
     safecall djb2_hash           # now a0 = hash
 
@@ -423,7 +444,7 @@ defcode ":", 0x0102b5df, COLON, VAR
     sw t1, 0(t0)        
     li s8, 1
     
-    mv ra, s7
+    mv ra, s7                    # moving back return
     NEXT
 
 docol:

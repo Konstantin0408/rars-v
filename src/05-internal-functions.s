@@ -162,3 +162,25 @@ lookup_error:
     j err_error                 
 lookup_done:
     ret
+    
+fill_word_string:               # a0 = beginning, a1 = length
+    mv t0, a0
+    li t1, 0
+    LOADINTO t2, HERE
+    mv t3, t2
+fill_loop:
+    lb t4, (t0)
+    sb t4, (t2)
+    addi t0, t0, 1
+    addi t1, t1, 1
+    addi t2, t2, 1
+    blt t1, a1, fill_loop
+fill_exit:
+    andi t2, t2, -4             # ANDi aligns HERE to cell
+    addi t2, t2, 8              # ADDi moves HERE forward
+    
+    sw t3, (t2)                 # save link to string before the word info
+    addi t2, t2, 4
+    SAVETO t2, HERE
+    ret
+
