@@ -9,7 +9,6 @@ extended:
 .ascii ": dup ( n1 -- n1 n1 ) sp@ @ ;\n"
 .ascii ": over ( n1 n2 -- n1 n2 n1 ) sp@ 4 + @ ;\n"
 .ascii ": swap ( n1 n2 -- n2 n1 ) over rot drop ;\n"
-.ascii ": allot ( n -- ) here @ + here ! ;\n"
 .ascii ": = ( n1 n2 -- b ) - 0= ;\n"
 .ascii ": mod ( n1 n2 -- m ) over over / * - ;\n"
 .ascii ": invert ( n1 -- ~n1 ) dup nand ;\n"

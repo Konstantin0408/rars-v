@@ -211,8 +211,17 @@ defcode "latest", 0x06e8ca72, FLATEST, FHERE
     PUSH t1
     NEXT
 
+# allot ( n -- )         Allocate memory for N bytes
+defcode "allot", 0x06175c21, ALLOT, FLATEST
+    checkunderflow 0
+    POP t1
+    LOADINTO t2, HERE
+    add t2, t2, t1
+    SAVETO t2, HERE    
+    NEXT
+
 # empty ( -- b )         Check if stack is empty
-defcode "empty", 0x06605c34, EMPTY, FLATEST
+defcode "empty", 0x06605c34, EMPTY, ALLOT
     li t1, DSP_TOP
     sub t1, t1, sp
     seqz t1, t1

@@ -1,0 +1,1 @@
+<Program repeats the char that the user inputs until it is a newline>
