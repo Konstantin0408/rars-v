@@ -266,16 +266,17 @@ top_pointer: .asciz " <top"
     ecall
     NEXT
 
-# begin                  Begin until loop, puts 
+# begin                  Begin until loop
 defcode "begin", 0x062587ea, BEGIN, DOT_S
-    LOADINTO t2, SAVE_LINK_A1 
+    LOADINTO t2, SAVE_LINK_A1
     li t1, 1
     PUSHCOND t1
     PUSHCOND t2
     NEXT
 
-# until                 Begin until loop, puts 
+# until                 Begin until loop
 defcode "until", 0x06828031, UNTIL, BEGIN
+    checkunderflow 0
     POP t2
     
     bnez t2, until_reached
@@ -286,9 +287,52 @@ until_reached:
     POPCOND zero
     POPCOND zero
     NEXT
+    
+# do                    Do looploop 
+defcode "do", 0x06597798, DO, UNTIL
+    checkunderflow CELL
+    LOADINTO t1, SAVE_CURRLP
+    PUSHCOND t1
+    POP t3
+    POP t4
+    LOADINTO t2, SAVE_LINK_A1 
+    li t1, 3
+    PUSHCOND t4
+    PUSHCOND t3
+    PUSHCOND t1
+    PUSHCOND t2
+    SAVETO s11, SAVE_CURRLP
+    NEXT
+
+# loop                 Do loop loop
+defcode "loop", 0x069a2f5f, LOOP, DO
+    LOADINTO t1, SAVE_CURRLP
+    lw t3, 8(t1)
+    lw t4, 12(t1)
+    addi t3, t3, 1
+    beq t3, t4, loop_reached
+    lw t2, 0(t1)
+    SAVETO t2, SAVE_LINK_A1
+    sw t3, 8(t1)
+    NEXT
+loop_reached:
+    POPCOND zero
+    POPCOND zero
+    POPCOND zero
+    POPCOND zero
+    POPCOND t1
+    SAVETO t1, SAVE_CURRLP
+    NEXT
+    
+# i                    Do loop index
+defcode "i", 0x0602b60e, LPINDEX, LOOP # todo properly
+    LOADINTO t1, SAVE_CURRLP
+    lw t3, 8(t1)
+    PUSH t3
+    NEXT
 
 # if                     If - else - then
-defcode "if", 0x06597834, IF, UNTIL
+defcode "if", 0x06597834, IF, LPINDEX
     POP t2
     li t1, 2
     PUSHCOND t1

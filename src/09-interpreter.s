@@ -140,16 +140,11 @@ lookup_word:
     
 process_block:
 
-    
-    
-    
-    
     LOADINTO t2, SAVE_LINK_A1
     
     lw t5, -4(a1)
     li t4, 0x00ffffff
     and t5, t5, t4
-    
     
     
     mv t4, a1
@@ -175,8 +170,6 @@ skip_if_iet:
     lw t2, 4(a1)
     
     lw a1, 0(a1)
-    
-    
     
     
     beq t5, t1, def_semi_skip 

@@ -5,7 +5,8 @@
 .data
 
 extended:
-.ascii ": - ( n1 n2 -- n ) -1 * + ;\n"
+.ascii ": negate ( n -- -n ) -1 * ;\n"
+.ascii ": - ( n1 n2 -- n ) negate + ;\n"
 .ascii ": dup ( n1 -- n1 n1 ) sp@ @ ;\n"
 .ascii ": over ( n1 n2 -- n1 n2 n1 ) sp@ 4 + @ ;\n"
 .ascii ": swap ( n1 n2 -- n2 n1 ) over rot drop ;\n"
@@ -18,10 +19,13 @@ extended:
 .ascii ": xor ( n1 n2 -- n )  over over or rot rot nand and ;\n"
 .ascii ": xnor ( n1 n2 -- n ) xor invert ;\n"
 .ascii ": negative ( n -- b ) 0x80000000 and 0x80000000 = ;\n"
-.ascii ": positive ( n -- b ) invert negative ; \n"
+.ascii ": positive ( n -- b ) negate negative ; \n"
 .ascii ": < ( n1 n2 -- b ) over over xor negative if drop else - then negative ;\n"
 .ascii ": > ( n1 n2 -- b ) swap < ;\n"
 .ascii ": cells 4 * ;\n"
+.ascii ": space 0x20 emit ;\n"
+.ascii ": cr 0xa emit ;\n"
+.ascii ": spaces dup positive if 0 do space loop else drop then ;\n"
 
 .word 0
 
@@ -53,8 +57,9 @@ switch_to_console_or_file:
     # todo close file
     
     bne t0, t1, read_from_file
-    li a7, 10
-    ecall
+    j switch_to_console
+    #li a7, 10
+    #ecall
 
 read_from_file:
     LOADINTO t1, CURRENT_ARG
